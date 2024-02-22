@@ -5,8 +5,8 @@ import {
 import { FirehoseSubscriptionBase, getOpsByType } from './util/subscription'
 import * as fs from 'fs';
 
-const targetsOneWord = JSON.parse(fs.readFileSync('resources/targetsOneWord.json', 'utf-8'));
-const targetsMultiWord = JSON.parse(fs.readFileSync('resources/targetsMultiWord.json', 'utf-8'));
+const targetsOneWord = JSON.parse(fs.readFileSync('./static/targetsOneWord.json', 'utf-8'));
+const targetsMultiWord = JSON.parse(fs.readFileSync('./static/targetsMultiWord.json', 'utf-8'));
 const targetWord = "阪神";
 
 function includesAny(text: string, targetsOneWord: string[]): boolean {
@@ -45,6 +45,7 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
         return {
           uri: create.uri,
           cid: create.cid,
+          text: create.record.text,
           replyParent: create.record?.reply?.parent.uri ?? null,
           replyRoot: create.record?.reply?.root.uri ?? null,
           indexedAt: new Date().toISOString(),
