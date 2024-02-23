@@ -7,6 +7,7 @@ import * as fs from 'fs';
 
 const targetsOneWord = JSON.parse(fs.readFileSync('./static/targetsOneWord.json', 'utf-8'));
 const targetsMultiWord = JSON.parse(fs.readFileSync('./static/targetsMultiWord.json', 'utf-8'));
+const ngWords = JSON.parse(fs.readFileSync('./static/ngWords.json', 'utf-8'));
 const targetWord = "阪神";
 
 function includesAny(text: string, targetsOneWord: string[]): boolean {
@@ -23,20 +24,11 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
     if (!isCommit(evt)) return
     const ops = await getOpsByType(evt)
 
-    // This logs the text of every post off the firehose.
-    // Just for fun :)
-    // Delete before actually using
-    for (const post of ops.posts.creates) {
-      if (includesAny(post.record.text, targetsOneWord) ||
-        includesMulti(post.record.text, targetsMultiWord, targetWord)) {
-        console.log(post.record.text)
-      }
-    }
-
     const postsToDelete = ops.posts.deletes.map((del) => del.uri)
     const postsToCreate = ops.posts.creates
       .filter((create) => {
         // only tigers-related posts
+        if (includesAny(create.record.text, ngWords)) return false;
         return includesAny(create.record.text, targetsOneWord) ||
           includesMulti(create.record.text, targetsMultiWord, targetWord)
       })
